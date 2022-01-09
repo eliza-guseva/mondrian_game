@@ -9,6 +9,20 @@ function getMousePos(canvas, event) {
 function isInside(pos, rect) {
     return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y;
 }
+function colorRectDefault(ctx, rectangles, rectNum) {
+    ctx.fillStyle = "green";
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 1;
+    ctx.fillRect(rectangles[rectNum][0], rectangles[rectNum][1], rectangles[rectNum][2], rectangles[rectNum][3]);
+    ctx.strokeRect(rectangles[rectNum][0], rectangles[rectNum][1], rectangles[rectNum][2], rectangles[rectNum][3]);
+}
+function colorRectMondrian(ctx, mondrianColors, rectangles, rectNum) {
+    ctx.fillStyle = mondrianColors[rectNum];
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = "black";
+    ctx.fillRect(rectangles[rectNum][0], rectangles[rectNum][1], rectangles[rectNum][2], rectangles[rectNum][3]);
+    ctx.strokeRect(rectangles[rectNum][0], rectangles[rectNum][1], rectangles[rectNum][2], rectangles[rectNum][3]);
+}
 var game = {
     rectangles: [
         [0, 0, 200, 300],
@@ -25,14 +39,11 @@ var mondrianColors = [
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 for (var i = 0; i < game.rectangles.length; i++) {
-    ctx.fillStyle = "green";
-    ctx.strokeStyle = "black";
-    ctx.fillRect(game.rectangles[i][0], game.rectangles[i][1], game.rectangles[i][2], game.rectangles[i][3]);
-    ctx.strokeRect(game.rectangles[i][0], game.rectangles[i][1], game.rectangles[i][2], game.rectangles[i][3]);
+    colorRectDefault(ctx, game.rectangles, i);
 }
 canvas.addEventListener('click', function (evt) {
     var mousePos = getMousePos(canvas, evt);
-    for (var i = 0; i < game.rectangles.length; i++) {
+    var _loop_1 = function (i) {
         var rect = {
             x: game.rectangles[i][0],
             y: game.rectangles[i][1],
@@ -40,11 +51,13 @@ canvas.addEventListener('click', function (evt) {
             height: game.rectangles[i][3]
         };
         if (isInside(mousePos, rect)) {
-            ctx.fillStyle = mondrianColors[i];
-            ctx.fillRect(game.rectangles[i][0], game.rectangles[i][1], game.rectangles[i][2], game.rectangles[i][3]);
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 10;
-            ctx.strokeRect(game.rectangles[i][0], game.rectangles[i][1], game.rectangles[i][2], game.rectangles[i][3]);
+            var divMouseDown = setTimeout(function () {
+                colorRectDefault(ctx, game.rectangles, i);
+            }, 2700);
+            colorRectMondrian(ctx, mondrianColors, game.rectangles, i);
         }
+    };
+    for (var i = 0; i < game.rectangles.length; i++) {
+        _loop_1(i);
     }
 }, false);
