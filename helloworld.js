@@ -68,5 +68,12 @@ canvas.addEventListener('click', function (evt) {
             rectangles[i].cancelTimeout();
         }
         document.getElementById('title').innerHTML = "Ty krasavcheg!!";
+        setTimeout(function () {
+            for (var i = 0; i < rectangles.length; i++) {
+                rectangles[i].isPressed = false;
+                rectangles[i].draw();
+                document.getElementById('title').innerHTML = "Your challenge level is ".concat(challengeLevel, " milliseconds");
+            }
+        }, 5000);
     }
 });
