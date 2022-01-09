@@ -39,7 +39,13 @@ var mondrianColors = [
 var isTimeouts = [1, 1, 1, 1, 1, 1];
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
-var timeout = 4000;
+var challengeLevel = parseInt(prompt('Set your timeout in ms', '4000'));
+var canvas2 = document.getElementById('canvas2');
+var ctx2 = canvas2.getContext('2d');
+ctx2.textAlign = 'center';
+ctx2.font = '30px serif';
+ctx2.fillText("Your challenge level is ".concat(challengeLevel, " milliseconds"), 250, 300);
+var timeout = challengeLevel;
 for (var i = 0; i < game.rectangles.length; i++) {
     colorRectDefault(ctx, game.rectangles, i);
 }

@@ -64,7 +64,15 @@ let isTimeouts = <number[]> [1, 1, 1, 1, 1, 1]
 
 const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 const ctx = <CanvasRenderingContext2D> canvas.getContext('2d');
-const timeout = <number> 4000;
+
+let challengeLevel = parseInt(prompt('Set your timeout in ms', '4000'))
+const canvas2 = <HTMLCanvasElement> document.getElementById('canvas2');
+const ctx2 = <CanvasRenderingContext2D> canvas2.getContext('2d');
+ctx2.textAlign = 'center';
+ctx2.font = '30px serif';
+ctx2.fillText(`Your challenge level is ${challengeLevel} milliseconds`, 250, 300);
+
+const timeout = <number> challengeLevel;
 
 for (let i = 0; i < game.rectangles.length; i++) {
     colorRectDefault(ctx, game.rectangles, i)
