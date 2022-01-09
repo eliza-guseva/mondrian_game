@@ -36,8 +36,10 @@ var game = {
 var mondrianColors = [
     "yellow", "white", "blue", "red", "white", "white"
 ];
+var isTimeouts = [1, 1, 1, 1, 1, 1];
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
+var timeout = 4000;
 for (var i = 0; i < game.rectangles.length; i++) {
     colorRectDefault(ctx, game.rectangles, i);
 }
@@ -51,13 +53,24 @@ canvas.addEventListener('click', function (evt) {
             height: game.rectangles[i][3]
         };
         if (isInside(mousePos, rect)) {
+            isTimeouts[i] = 0;
             var divMouseDown = setTimeout(function () {
-                colorRectDefault(ctx, game.rectangles, i);
-            }, 2700);
+                isTimeouts[i] = 1;
+            }, timeout);
             colorRectMondrian(ctx, mondrianColors, game.rectangles, i);
         }
     };
     for (var i = 0; i < game.rectangles.length; i++) {
         _loop_1(i);
+    }
+    for (var i = 0; i < game.rectangles.length; i++) {
+        if (isTimeouts[i] == 1) {
+            colorRectDefault(ctx, game.rectangles, i);
+        }
+    }
+    if (isTimeouts.reduce(function (pv, cv) { return pv + cv; }, 0) == 0) {
+        for (var i = 0; i < game.rectangles.length; i++) {
+            colorRectMondrian(ctx, mondrianColors, game.rectangles, i);
+        }
     }
 }, false);

@@ -60,9 +60,11 @@ let game =  {
 let mondrianColors = [
     "yellow", "white", "blue", "red", "white", "white"
 ]
+let isTimeouts = [1, 1, 1, 1, 1, 1]
 
 const canvas = <HTMLCanvasElement> document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const ctx = <CanvasRenderingContext2D> canvas.getContext('2d');
+const timeout = <number> 4000;
 
 for (let i = 0; i < game.rectangles.length; i++) {
     colorRectDefault(ctx, game.rectangles, i)
@@ -82,11 +84,23 @@ canvas.addEventListener('click', function(evt) {
         }
     
         if (isInside(mousePos,rect)) {
+            isTimeouts[i] = 0;
             let divMouseDown = setTimeout(function() {
-                colorRectDefault(ctx, game.rectangles, i)
-             }, 2700);
+                isTimeouts[i] = 1;
+             }, timeout);
 
             colorRectMondrian(ctx, mondrianColors, game.rectangles, i)
         }
-        }  
+        }
+        for (let i = 0; i < game.rectangles.length; i++){
+            if (isTimeouts[i] == 1){
+                colorRectDefault(ctx, game.rectangles, i)
+            }
+        }
+        
+    if (isTimeouts.reduce(function(pv, cv) { return pv + cv; }, 0) == 0){
+        for (let i = 0; i < game.rectangles.length; i++){
+            colorRectMondrian(ctx, mondrianColors, game.rectangles, i)
+        }
+    }
 }, false);
