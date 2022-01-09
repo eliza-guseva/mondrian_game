@@ -6,7 +6,7 @@ function getMousePos(canvas: HTMLCanvasElement, event: MouseEvent) {
     };
 }
 //Function to check whether a point is inside a rectangle
-function isInside(pos, rect){
+function isInside(pos: {x: number; y: number}, rect: {x: number; y: number; width: number; height: number}){
     return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.height && pos.y > rect.y
 }
 
@@ -46,7 +46,7 @@ function colorRectMondrian(ctx: CanvasRenderingContext2D, mondrianColors: string
         )
 }
 
-let game =  {
+let game =  <{rectangles: number[][]}> {
     rectangles: [
         [0, 0, 200, 300], 
         [0, 300, 200, 200],
@@ -57,10 +57,10 @@ let game =  {
     ]
 }
 
-let mondrianColors = [
+let mondrianColors = <string[]> [
     "yellow", "white", "blue", "red", "white", "white"
 ]
-let isTimeouts = [1, 1, 1, 1, 1, 1]
+let isTimeouts = <number[]> [1, 1, 1, 1, 1, 1]
 
 const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 const ctx = <CanvasRenderingContext2D> canvas.getContext('2d');
