@@ -1,114 +1,94 @@
-function getMousePos(canvas: HTMLCanvasElement, event: MouseEvent) {
+function getMousePos(canvas: HTMLCanvasElement, event: MouseEvent): {x: number, y: number} {
     let rect = canvas.getBoundingClientRect();
     return {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top
     };
 }
-//Function to check whether a point is inside a rectangle
-function isInside(pos: {x: number; y: number}, rect: {x: number; y: number; width: number; height: number}){
-    return pos.x > rect.x && pos.x < rect.x+rect.width && pos.y < rect.y+rect.height && pos.y > rect.y
-}
 
-function colorRectDefault(ctx: CanvasRenderingContext2D, rectangles: number[][], rectNum: number){
-    ctx.fillStyle = "green";
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 1;
-    ctx.fillRect(
-            rectangles[rectNum][0],
-            rectangles[rectNum][1],
-            rectangles[rectNum][2],
-            rectangles[rectNum][3]
-        );
-    ctx.strokeRect(
-        rectangles[rectNum][0],
-        rectangles[rectNum][1],
-        rectangles[rectNum][2],
-        rectangles[rectNum][3]
-        )
-}
 
-function colorRectMondrian(ctx: CanvasRenderingContext2D, mondrianColors: string[], rectangles: number[][], rectNum: number){
-    ctx.fillStyle = mondrianColors[rectNum];
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = "black";
-    ctx.fillRect(
-            rectangles[rectNum][0],
-            rectangles[rectNum][1],
-            rectangles[rectNum][2],
-            rectangles[rectNum][3]
-        );
-    ctx.strokeRect(
-        rectangles[rectNum][0],
-        rectangles[rectNum][1],
-        rectangles[rectNum][2],
-        rectangles[rectNum][3]
-        )
-}
+class Rectangle {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+    isPressed: boolean;
+    timeout: number;
+    mondrianColor: string;
+    ctx: CanvasRenderingContext2D;
 
-let game =  <{rectangles: number[][]}> {
-    rectangles: [
-        [0, 0, 200, 300], 
-        [0, 300, 200, 200],
-        [0, 500, 200, 100],
-        [200, 0, 400, 500],
-        [200, 500, 300, 100],
-        [500, 500, 100, 100]
-    ]
-}
+    constructor(x: number, y: number, width: number, height: number, mondrianColor: string, ctx: CanvasRenderingContext2D) {
+      this.height = height;
+      this.width = width;
+      this.x = x;
+      this.y = y;
+      this.isPressed = false;
+      this.mondrianColor = mondrianColor;
+      this.ctx = ctx;
+    }
 
-let mondrianColors = <string[]> [
-    "yellow", "white", "blue", "red", "white", "white"
-]
-let isTimeouts = <number[]> [1, 1, 1, 1, 1, 1]
+  draw(): void{
+        this.ctx.fillStyle = this.isPressed ? this.mondrianColor: 'green';
+        this.ctx.lineWidth = this.isPressed ? 10: 1;
+        this.ctx.strokeStyle = "black";
+        this.ctx.fillRect(this.x, this.y, this.width, this.height);
+        this.ctx.strokeRect(this.x, this.y, this.width, this.height);
+    }
+
+    ifInside(pos: {x: number; y: number}): boolean{
+        return pos.x > this.x && pos.x < this.x + this.width && pos.y < this.y + this.height && pos.y > this.y
+    }
+
+    processClick(mousePos: {x: number, y: number}, timeout: number){
+        if (this.ifInside(mousePos)) {
+            this.isPressed = true;
+            this.draw();
+            this.timeout = setTimeout(() => {
+                this.isPressed = false;
+                this.draw();
+             }, timeout);
+        }
+    }
+
+    cancelTimeout(){
+        clearTimeout(this.timeout);
+    }
+}
 
 const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 const ctx = <CanvasRenderingContext2D> canvas.getContext('2d');
 
-let challengeLevel = parseInt(prompt('Set your timeout in ms', '4000'))
-const canvas2 = <HTMLCanvasElement> document.getElementById('canvas2');
-const ctx2 = <CanvasRenderingContext2D> canvas2.getContext('2d');
-ctx2.textAlign = 'center';
-ctx2.font = '30px serif';
-ctx2.fillText(`Your challenge level is ${challengeLevel} milliseconds`, 250, 300);
-
+let rectangles = <Rectangle[]> [
+        new Rectangle(0, 0, 200, 300, 'yellow', ctx), 
+        new Rectangle(0, 300, 200, 200, 'white', ctx),
+        new Rectangle(0, 500, 200, 100, 'blue', ctx),
+        new Rectangle(200, 0, 400, 500, 'red', ctx),
+        new Rectangle(200, 500, 300, 100, 'white', ctx),
+        new Rectangle(500, 500, 100, 100, 'white', ctx),
+    ]
+let challengeLevel = parseInt(prompt('Set your timeout in ms', '3000'))
+document.getElementById('title').innerHTML = `Your challenge level is ${challengeLevel} milliseconds`;
 const timeout = <number> challengeLevel;
 
-for (let i = 0; i < game.rectangles.length; i++) {
-    colorRectDefault(ctx, game.rectangles, i)
+for (let i = 0; i < rectangles.length; i++) {
+    rectangles[i].draw()
 }
 
 
 canvas.addEventListener('click', function(evt) {
-    
     let mousePos = getMousePos(canvas, evt);
-    for (let i = 0; i < game.rectangles.length; i++)
-    {
-        let rect = {
-            x: game.rectangles[i][0],
-            y: game.rectangles[i][1],
-            width: game.rectangles[i][2],
-            height: game.rectangles[i][3]
-        }
-    
-        if (isInside(mousePos,rect)) {
-            isTimeouts[i] = 0;
-            let divMouseDown = setTimeout(function() {
-                isTimeouts[i] = 1;
-             }, timeout);
-
-            colorRectMondrian(ctx, mondrianColors, game.rectangles, i)
-        }
-        }
-        for (let i = 0; i < game.rectangles.length; i++){
-            if (isTimeouts[i] == 1){
-                colorRectDefault(ctx, game.rectangles, i)
-            }
-        }
+    for (let i = 0; i < rectangles.length; i++){
+        let rect = rectangles[i]
+        rect.processClick(mousePos, timeout);
         
-    if (isTimeouts.reduce(function(pv, cv) { return pv + cv; }, 0) == 0){
-        for (let i = 0; i < game.rectangles.length; i++){
-            colorRectMondrian(ctx, mondrianColors, game.rectangles, i)
-        }
     }
-}, false);
+    if (rectangles.reduce(function(pv, cv) { return pv && cv.isPressed; }, true))
+    {
+        for (let i = 0; i < rectangles.length; i++){
+            rectangles[i].cancelTimeout();
+        }
+        document.getElementById('title').innerHTML = `Ty krasavcheg!!`;
+}
+    }
+    
+)
