@@ -11,7 +11,7 @@
   <h2>Enter names in the fields, then click "Submit" to initate the game:</h2>
   <form id="frm1" action="the_game.html">
     Game name: <input type="text" name="fname" value="Just a game" id="game_name"><br>
-    Timemout (ms): <input type="text" name="lname" value="3000"><br><br>
+    Timemout (ms): <input type="text" name="lname" value="3000" id="timeout"><br><br>
     <input type="button" onclick="sendGameToServer()" value="Submit">
   </form>
 
@@ -20,7 +20,11 @@
     document.getElementById("frm1").submit();
     const ws1 = new WebSocket("ws://localhost:8001/");
     ws1.addEventListener('open', function (event) {
-      ws1.send(JSON.stringify({type: 'game_name', value: document.getElementById("game_name").value}));
+      ws1.send(JSON.stringify({
+        type: 'init', 
+        'game_name': document.getElementById("game_name").value,
+        'timeout': document.getElementById('timeout').value
+      }));
     });
   }
   </script>

@@ -9,11 +9,6 @@ function getMousePos(canvas: HTMLCanvasElement, event: MouseEvent): {x: number, 
 }
 
 
-function generateGame(): {}{
-    return 
-}
-
-
 class Rectangle {
     x: number;
     y: number;
@@ -64,6 +59,7 @@ class Rectangle {
 
 const canvas = <HTMLCanvasElement> document.getElementById('canvas');
 const ctx = <CanvasRenderingContext2D> canvas.getContext('2d');
+const websocket = new WebSocket("ws://localhost:8001/");
 
 let rectangles = <Rectangle[]> [
         new Rectangle(0, 0, 200, 300, 'yellow', ctx), 
