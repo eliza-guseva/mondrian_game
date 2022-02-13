@@ -51,7 +51,10 @@ var rectangles = [
     new Rectangle(200, 500, 300, 100, 'white', ctx),
     new Rectangle(500, 500, 100, 100, 'white', ctx),
 ];
+var websocket = new WebSocket("ws://localhost:8001/");
+// TODO make into a function handle reading from server
 var challengeLevel = parseInt(prompt('Set your timeout in ms', '3000'));
+websocket.send(JSON.stringify({ name: 'timeout', value: challengeLevel }));
 document.getElementById('title').innerHTML = "Your challenge level is ".concat(challengeLevel, " milliseconds");
 var timeout = challengeLevel;
 for (var i = 0; i < rectangles.length; i++) {

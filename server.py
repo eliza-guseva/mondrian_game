@@ -3,10 +3,11 @@ import websockets
 
 async def echo(websocket):
     async for message in websocket:
-        await websocket.send(message)
+        # await websocket.send(message)
+        print(message)
 
 async def main():
-    async with websockets.serve(echo, "localhost", 8765):
+    async with websockets.serve(echo, "", 8001):
         await asyncio.Future()  # run forever
 
 asyncio.run(main())

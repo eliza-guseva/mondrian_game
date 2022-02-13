@@ -1,9 +1,16 @@
+
+
 function getMousePos(canvas: HTMLCanvasElement, event: MouseEvent): {x: number, y: number} {
     let rect = canvas.getBoundingClientRect();
     return {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top
     };
+}
+
+
+function generateGame(): {}{
+    return 
 }
 
 
@@ -66,7 +73,13 @@ let rectangles = <Rectangle[]> [
         new Rectangle(200, 500, 300, 100, 'white', ctx),
         new Rectangle(500, 500, 100, 100, 'white', ctx),
     ]
+
+
+
+// TODO make into a function handle reading from server
 let challengeLevel = parseInt(prompt('Set your timeout in ms', '3000'))
+
+
 document.getElementById('title').innerHTML = `Your challenge level is ${challengeLevel} milliseconds`;
 const timeout = <number> challengeLevel;
 
