@@ -7,29 +7,44 @@
     The Mondrian Game!
   </h1>
 
-  
+  <h2 id="subtitle">
+
+  </h2>
+
+  <div id="form_div">
   <h2>Enter names in the fields, then click "Submit" to initate the game:</h2>
   <form id="frm1" action="the_game.html">
     Game name: <input type="text" name="fname" value="Just a game" id="game_name"><br>
     Timemout (ms): <input type="text" name="lname" value="3000" id="timeout"><br><br>
     <input type="button" onclick="sendGameToServer()" value="Submit">
   </form>
+</div>
 
   <script>
   function sendGameToServer() {
-    document.getElementById("frm1").submit();
+    let game_name = document.getElementById("game_name").value;
+    let timeout = document.getElementById('timeout').value;
     const ws1 = new WebSocket("ws://localhost:8001/");
     ws1.addEventListener('open', function (event) {
       ws1.send(JSON.stringify({
         type: 'init', 
-        'game_name': document.getElementById("game_name").value,
-        'timeout': document.getElementById('timeout').value
+        'game_name': game_name,
+        'timeout': timeout
       }));
     });
+    document.getElementById("canvas").style.visibility = "visible";
+    document.getElementById("form_div").style.display = "none";
+    document.getElementById('subtitle').innerHTML = `${game_name}: timeout ${timeout} ms`;
   }
   </script>
 
-
-
+<canvas 
+  id="canvas" 
+  style="border:1px solid #000000; visibility: hidden;"
+  width="600"
+  height="600"
+>
+</canvas>
+<script src="frontend_mondrian.js"></script>
 </body>
 </html>

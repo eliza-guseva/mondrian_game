@@ -5,6 +5,13 @@ function getMousePos(canvas, event) {
         y: event.clientY - rect.top
     };
 }
+function getGameData(data) {
+    var game = JSON.parse(data);
+    return parseInt(game['timeout']);
+}
+function getRectangles(gameJson, ctx) {
+    return [new Rectangle(0, 0, 200, 300, 'yellow', ctx)];
+}
 var Rectangle = /** @class */ (function () {
     function Rectangle(x, y, width, height, mondrianColor, ctx) {
         this.height = height;
@@ -43,20 +50,25 @@ var Rectangle = /** @class */ (function () {
 }());
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
-var rectangles = [
-    new Rectangle(0, 0, 200, 300, 'yellow', ctx),
-    new Rectangle(0, 300, 200, 200, 'white', ctx),
-    new Rectangle(0, 500, 200, 100, 'blue', ctx),
-    new Rectangle(200, 0, 400, 500, 'red', ctx),
-    new Rectangle(200, 500, 300, 100, 'white', ctx),
-    new Rectangle(500, 500, 100, 100, 'white', ctx),
-];
 var websocket = new WebSocket("ws://localhost:8001/");
-// TODO make into a function handle reading from server
-var challengeLevel = parseInt(prompt('Set your timeout in ms', '3000'));
-websocket.send(JSON.stringify({ name: 'timeout', value: challengeLevel }));
-document.getElementById('title').innerHTML = "Your challenge level is ".concat(challengeLevel, " milliseconds");
-var timeout = challengeLevel;
+var timeout = 0;
+var ws1 = new WebSocket("ws://localhost:8001/");
+ws1.addEventListener('message', function (_a) {
+    var data = _a.data;
+    var game = JSON.parse(data);
+    ws1.onmessage = game;
+});
+timeout = ws1.onmessage['timeout'];
+// let rectangles = <Rectangle[]> [
+//         new Rectangle(0, 0, 200, 300, 'yellow', ctx), 
+//         new Rectangle(0, 300, 200, 200, 'white', ctx),
+//         new Rectangle(0, 500, 200, 100, 'blue', ctx),
+//         new Rectangle(200, 0, 400, 500, 'red', ctx),
+//         new Rectangle(200, 500, 300, 100, 'white', ctx),
+//         new Rectangle(500, 500, 100, 100, 'white', ctx),
+//     ]
+var rectangles = getRectangles('', ctx);
+document.getElementById('title').innerHTML = "Your challenge level is ".concat(timeout, " milliseconds");
 for (var i = 0; i < rectangles.length; i++) {
     rectangles[i].draw();
 }
@@ -75,7 +87,7 @@ canvas.addEventListener('click', function (evt) {
             for (var i = 0; i < rectangles.length; i++) {
                 rectangles[i].isPressed = false;
                 rectangles[i].draw();
-                document.getElementById('title').innerHTML = "Your challenge level is ".concat(challengeLevel, " milliseconds");
+                document.getElementById('title').innerHTML = "Your challenge level is ".concat(timeout, " milliseconds");
             }
         }, 5000);
     }
